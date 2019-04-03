@@ -11,7 +11,7 @@ class Index(ListView):
     context_object_name = "items"
     template_name = "main/index.html"
   
-    # 2. Pass queryset to templates (django stuff)
+    # Pass queryset to templates (django stuff)
     def get_context_data(self, *args, **kwargs):
         
         # Get, set, and return context (django stuff)
@@ -19,40 +19,40 @@ class Index(ListView):
         context['queryset'] = self.queryset
         return context
     
-    # 1. Get search form data, scrape results and pass it to queryset (django stuff)
+    # Get search results data (called a queryset), scrape those results, and pass them to django
     def get_queryset(self):
         
-        # Base structure for the url we are going to search on ebay. Take users input and put them in {item}, {price_low}, and {price_high}. (django stuff)
+        # Base structure for the url we are going to search on ebay. Take users input and put them in {item}, {price_low}, and {price_high}.
         base_url = "https://www.ebay.com/sch/parser.html?_from=R40&_nkw={item}&_ipg=25"
         prices_url = "&_udlo={price_low}&_udhi={price_high}"
         
-        # Get the text we typed into the search bar and price range bars (django stuff)
+        # Get the text we typed into the search bar and price range bars
         item = self.request.GET.get('item')
         price_low = self.request.GET.get('from')
         price_high = self.request.GET.get('to')
         
-        # If we are requesting a webpage, and a search item was given (both needed to tell eBay to give us a search result page) (django stuff)
+        # If we are requesting a webpage, and a search item was given (both needed to tell eBay to give us a search result page)
         if self.request.method == 'GET' and item:
             
-            # Construct (django stuff)
+            # Construct url
             item = "+".join(item.split())
             if price_low and price_high:
                 url = (base_url + prices_url).format(item=item,price_low=price_low,price_high=price_high)
             else:
                 url = base_url.format(item=item)
                 
-            # Create a Scraper object and run it (django stuff)
+            # Create a Scraper object and run it
             scraper = Scraper(base_url=url)
             app = scraper.run()
             
-            # Return the data we just scraped, so django can display it in the web app (django stuff)
+            # Return the data we just scraped, so django can display it in the web app
             return app
 
         
 # Scraper class
 class Scraper(Index):
     
-    # Constructor
+    # Scraper class constructor
     def __init__(self, base_url=None):
         super(Scraper, self).__init__()
         
