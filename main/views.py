@@ -111,20 +111,22 @@ class Scraper(Index):
         if condition:
             condition = condition.text
             
-        # 
+        # Get price of item (like "$5.50 to $7.99")
         price = parser.find('span', class_="s-item__price")
         if price:
             price = price.text
         else:
             price = ' '
             
-        # 
+        # Get image of item
         image = parser.find('img', class_="s-item__image-img").get('src')
+        # If item doesn't have an image on this webpage (just has ebays default blank image)
         if image == 'https://ir.ebaystatic.com/cr/v/c1/s_1x2.gif':
+            # Go into the link of the item, and get the image from there
             soup = self.make_soup(link)
             image = soup.find('img', {'id': "icImg"}).get('src')
             
-        # 
+        # Create a dictionary of this ebay item, and append it to the overall queryset (that will be given to django to display)
         self.queryset.append(dict(name=name,link=link,condition=condition,price=price,image=image))
 
     # Make soup method (create beautiful soup object from our webpage)
